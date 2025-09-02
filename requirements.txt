@@ -1,0 +1,7 @@
+pandas
+streamlit
+requests
+pyodbc
+openpyxl
+pytest
+python-dotenv
