@@ -1,3 +1,13 @@
+# Registro de desarrollo y decisiones
+
+## 2025-09-03
+
+- Se corrigió la estructura e indentación de la clase MainWindow para que todo el contenido esté dentro de un solo método `__init__` y el bloque principal fuera de la clase.
+- Se agregó el bloque principal para ejecutar la ventana de la aplicación PyQt5 (`if __name__ == "__main__": ...`).
+- Se validó visualmente el dashboard principal, cumpliendo con los estándares de software profesional.
+- Se acordó avanzar primero con la vista y elementos visuales del dashboard antes de la funcionalidad.
+- Se agregó un panel de notificaciones/logs recientes en la parte inferior del dashboard, con simulación de mensajes de log (INFO, WARNING, ERROR). Este panel se conectará a logs reales en futuras etapas.
+
 # Documentación de Desarrollo ETL_EMPRESA
 
 Este documento servirá para registrar cambios importantes, decisiones, errores encontrados y soluciones durante el desarrollo del proyecto.
@@ -66,3 +76,45 @@ Este documento servirá para registrar cambios importantes, decisiones, errores 
 
 - Fecha: 02/09/2025
 - Error: IndentationError: unexpected indent en main_window.py. Causa: parte del código estaba fuera del método __init__ de la clase MainWindow. Solución: reubicar todo el contenido dentro del método __init__ y revisar la indentación.
+- Fecha: 02/09/2025
+- Descripción del cambio: Se realiza el push de los cambios locales al repositorio remoto en GitHub, asegurando que el estado actual del proyecto esté respaldado y disponible para colaboración.
+- Comando ejecutado:
+	```powershell
+	git push
+	```
+
+# Registro de corrección de errores críticos en la interfaz PyQt5
+
+## Fecha: 03/09/2025
+
+### Problemas detectados:
+- Error: "QWidget: Must construct a QApplication before a QWidget" al ejecutar `main_window.py`.
+- Widgets y layouts creados fuera del método `__init__` de la clase `MainWindow`.
+- Uso incorrecto de `self` fuera de la clase, generando conflictos de contexto.
+- Indentación incorrecta y duplicación de imports dentro de métodos.
+- El dashboard no abría la ventana principal por inicialización incorrecta.
+
+### Acciones realizadas:
+- Se revisó el archivo línea por línea para identificar widgets y layouts fuera de `__init__`.
+- Se movió toda la lógica de creación de widgets y layouts dentro del método `__init__`.
+- Se eliminaron líneas fuera de la clase y se aseguraron los imports en la parte superior.
+- Se probó la ejecución tras cada corrección hasta que la ventana abrió correctamente.
+- Se validó el diseño profesional y modular del dashboard.
+
+### Resultado:
+- El dashboard ETL abre correctamente y muestra todos los paneles y botones.
+- El código está listo para expandirse con nuevas funcionalidades.
+
+---
+
+#### Comando utilizado para ejecutar:
+`python interface/main_window.py`
+
+#### Estado final:
+- Exit Code: 0
+- Ventana abierta correctamente (ver imagen adjunta en registro de desarrollo)
+
+---
+
+#### Siguiente paso:
+Avanzar con integración de módulos y funcionalidades.

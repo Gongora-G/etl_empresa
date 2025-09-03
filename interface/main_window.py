@@ -1,13 +1,11 @@
-# Interfaz principal del software ETL usando PyQt5
 
+# Interfaz principal del software ETL usando PyQt5
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QHBoxLayout, QFrame, QPushButton, QListWidget
-from PyQt5.QtGui import QPixmap, QFont, QColor
+from PyQt5.QtGui import QFont, QColor
 from PyQt5.QtCore import Qt
 import sys
 
-
 class MainWindow(QMainWindow):
-
     def __init__(self):
         super().__init__()
         self.setWindowTitle("ETL Empresa - Escritorio")
@@ -91,6 +89,44 @@ class MainWindow(QMainWindow):
         kpi_frame.setLayout(kpi_layout)
         content_layout.addWidget(kpi_frame)
 
+        # Botones de acción rápida
+        acciones_frame = QFrame()
+        acciones_layout = QHBoxLayout()
+
+        btn_ejecutar_etl = QPushButton("Ejecutar ETL")
+        btn_ejecutar_etl.setStyleSheet("background-color: #1e3c78; color: white; font-size: 16px; padding: 10px 30px; border-radius: 8px;")
+        acciones_layout.addWidget(btn_ejecutar_etl)
+
+        btn_subir_ocr = QPushButton("Subir archivo para OCR")
+        btn_subir_ocr.setStyleSheet("background-color: #1e3c78; color: white; font-size: 16px; padding: 10px 30px; border-radius: 8px;")
+        acciones_layout.addWidget(btn_subir_ocr)
+
+        btn_exportar = QPushButton("Exportar resultados")
+        btn_exportar.setStyleSheet("background-color: #1e3c78; color: white; font-size: 16px; padding: 10px 30px; border-radius: 8px;")
+        acciones_layout.addWidget(btn_exportar)
+
+        acciones_frame.setLayout(acciones_layout)
+        content_layout.addWidget(acciones_frame)
+
+        # Panel de notificaciones/logs recientes
+        logs_frame = QFrame()
+        logs_frame.setStyleSheet("background: #f5f5f5; border: 1px solid #d1d1d1; border-radius: 8px;")
+        logs_layout = QVBoxLayout()
+        logs_title = QLabel("Notificaciones y logs recientes")
+        logs_title.setFont(QFont("Arial", 13, QFont.Bold))
+        logs_title.setStyleSheet("color: #1e3c78; margin-bottom: 4px;")
+        logs_layout.addWidget(logs_title)
+
+        # Simulación de logs (luego se conectará a logs reales)
+        self.logs_list = QListWidget()
+        self.logs_list.addItem("[INFO] Proceso ETL ejecutado correctamente - 01/09/2025 18:30")
+        self.logs_list.addItem("[WARNING] Archivo de entrada con datos incompletos - 01/09/2025 18:00")
+        self.logs_list.addItem("[ERROR] Fallo conexión SQL Server - 31/08/2025 22:10")
+        self.logs_list.setStyleSheet("background: #fff; font-size: 13px; border: none;")
+        logs_layout.addWidget(self.logs_list)
+        logs_frame.setLayout(logs_layout)
+
+        content_layout.addWidget(logs_frame)
         content_layout.addStretch()
         content_frame.setLayout(content_layout)
 
@@ -102,6 +138,8 @@ class MainWindow(QMainWindow):
         container.setLayout(main_layout)
         self.setCentralWidget(container)
 
+
+# Bloque principal para ejecutar la ventana
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()

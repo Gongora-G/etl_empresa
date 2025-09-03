@@ -1,3 +1,9 @@
+### 2025-09-03 - Avance en la interfaz de usuario (dashboard)
+
+- Se corrigió la estructura de la clase principal de la interfaz para evitar errores de ejecución.
+- Se agregó un panel de notificaciones/logs recientes en la parte inferior del dashboard, permitiendo visualizar mensajes de estado, advertencias y errores recientes de los procesos ETL.
+- El panel de logs utiliza un `QListWidget` para mostrar mensajes simulados, que luego se conectarán a los logs reales del sistema.
+- Se mantiene la documentación y registro de cada avance y decisión en el archivo `DOCUMENTACION_DESARROLLO.md`.
 # Documentación del Proyecto ETL_EMPRESA
 
 ## 1. Descripción General
