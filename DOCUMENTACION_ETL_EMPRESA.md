@@ -217,4 +217,32 @@ graph TD;
 
 ---
 
+## 9.1. Relación entre botones de acción rápida y menú lateral
+
+- **Botones de acción rápida (dashboard):**
+  - Ejecutar ETL: Lanza el proceso ETL completo usando la configuración actual. No cambia de vista, solo ejecuta y actualiza KPIs/logs.
+  - Subir archivo para OCR: Abre un diálogo para seleccionar archivo, ejecuta OCR y muestra el resultado en el dashboard o popup.
+  - Exportar resultados: Permite exportar los resultados del último ETL a Excel/CSV. Abre diálogo de guardado, no cambia de vista.
+
+- **Menú lateral:**
+  - Cada opción carga una vista diferente en el panel principal:
+    - Dashboard: KPIs, botones rápidos y logs.
+    - Extracción: Configuración y prueba de fuentes de datos.
+    - Transformación: Reglas de limpieza y transformación.
+    - Carga: Configuración de destinos y revisión de cargas.
+    - OCR: Subida de archivos, resultados y logs OCR.
+    - Logs: Exploración de logs históricos.
+    - Configuración: Parámetros generales y credenciales.
+
+- **Resumen:**
+  - Los botones rápidos ejecutan acciones globales desde el dashboard.
+  - El menú lateral permite navegar y gestionar cada etapa del proceso ETL en vistas dedicadas.
+
+---
+
+**Próximo paso:**
+- Desarrollar primero los módulos y vistas del menú lateral izquierdo, comenzando por el módulo de Extracción.
+
+---
+
 **Este documento sirve como guía y referencia para el desarrollo completo y profesional del proyecto ETL_EMPRESA.**

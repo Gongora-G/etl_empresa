@@ -3,6 +3,7 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QHBoxLayout, QFrame, QPushButton, QListWidget
 from PyQt5.QtGui import QFont, QColor
 from PyQt5.QtCore import Qt
+from views import ExtractionView
 import sys
 
 class MainWindow(QMainWindow):
@@ -43,16 +44,41 @@ class MainWindow(QMainWindow):
         menu_layout.addStretch()
         menu_frame.setLayout(menu_layout)
 
-        # Panel principal (contenido)
-        content_frame = QFrame()
-        content_frame.setStyleSheet(f"background-color: rgb({gris.red()}, {gris.green()}, {gris.blue()});")
-        content_layout = QVBoxLayout()
+        # Panel principal (contenido) - ahora intercambiable
+        self.content_frame = QFrame()
+        self.content_frame.setStyleSheet(f"background-color: rgb({gris.red()}, {gris.green()}, {gris.blue()});")
+        self.content_layout = QVBoxLayout()
+        self.content_frame.setLayout(self.content_layout)
 
+        # Vista por defecto: dashboard
+        self.show_dashboard()
+
+        # Agregar menú y contenido al layout principal
+        main_layout.addWidget(menu_frame)
+        main_layout.addWidget(self.content_frame)
+
+        container = QWidget()
+        container.setLayout(main_layout)
+        self.setCentralWidget(container)
+
+        # Conectar selección de menú
+        self.menu_list.currentRowChanged.connect(self.cambiar_vista)
+
+    def limpiar_content(self):
+        # Elimina widgets actuales del content_layout
+        while self.content_layout.count():
+            item = self.content_layout.takeAt(0)
+            widget = item.widget()
+            if widget:
+                widget.deleteLater()
+
+    def show_dashboard(self):
+        self.limpiar_content()
         # Panel de bienvenida y resumen
         bienvenida = QLabel("Bienvenido al sistema ETL de la empresa")
         bienvenida.setFont(QFont("Arial", 20))
         bienvenida.setStyleSheet("color: #1e3c78; margin-top: 30px;")
-        content_layout.addWidget(bienvenida)
+        self.content_layout.addWidget(bienvenida)
 
         resumen = QLabel("""
         Este dashboard te permite gestionar y monitorear los procesos ETL:
@@ -63,7 +89,7 @@ class MainWindow(QMainWindow):
         """)
         resumen.setFont(QFont("Arial", 12))
         resumen.setStyleSheet("color: #333; margin-top: 10px;")
-        content_layout.addWidget(resumen)
+        self.content_layout.addWidget(resumen)
 
         # Indicadores y estadísticas (KPIs)
         kpi_frame = QFrame()
@@ -87,7 +113,7 @@ class MainWindow(QMainWindow):
         kpi_layout.addWidget(kpi3)
         kpi_layout.addWidget(kpi4)
         kpi_frame.setLayout(kpi_layout)
-        content_layout.addWidget(kpi_frame)
+        self.content_layout.addWidget(kpi_frame)
 
         # Botones de acción rápida
         acciones_frame = QFrame()
@@ -106,7 +132,7 @@ class MainWindow(QMainWindow):
         acciones_layout.addWidget(btn_exportar)
 
         acciones_frame.setLayout(acciones_layout)
-        content_layout.addWidget(acciones_frame)
+        self.content_layout.addWidget(acciones_frame)
 
         # Panel de notificaciones/logs recientes
         logs_frame = QFrame()
@@ -126,17 +152,20 @@ class MainWindow(QMainWindow):
         logs_layout.addWidget(self.logs_list)
         logs_frame.setLayout(logs_layout)
 
-        content_layout.addWidget(logs_frame)
-        content_layout.addStretch()
-        content_frame.setLayout(content_layout)
+        self.content_layout.addWidget(logs_frame)
+        self.content_layout.addStretch()
 
-        # Agregar menú y contenido al layout principal
-        main_layout.addWidget(menu_frame)
-        main_layout.addWidget(content_frame)
+    def show_extraction(self):
+        self.limpiar_content()
+        extraction_view = ExtractionView()
+        self.content_layout.addWidget(extraction_view)
 
-        container = QWidget()
-        container.setLayout(main_layout)
-        self.setCentralWidget(container)
+    def cambiar_vista(self, index):
+        if index == 0:
+            self.show_dashboard()
+        elif index == 1:
+            self.show_extraction()
+        # Aquí se pueden agregar más elif para otras vistas
 
 
 # Bloque principal para ejecutar la ventana

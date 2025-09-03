@@ -118,3 +118,42 @@ Este documento servirá para registrar cambios importantes, decisiones, errores 
 
 #### Siguiente paso:
 Avanzar con integración de módulos y funcionalidades.
+
+# Registro de rediseño profesional del gestor de conexiones y campos personalizados
+
+## Fecha: 03/09/2025
+
+### Cambios y decisiones:
+- Se rediseñó el gestor de conexiones para permitir agregar, editar y eliminar campos personalizados visualmente.
+- Cada campo ahora permite definir su tipo (Texto, Número, Token/Clave, URL, Otro) para mayor claridad y control.
+- Se eliminó la restricción de tipos predefinidos de fuente, permitiendo máxima flexibilidad para cualquier API, base de datos o sistema.
+- El usuario puede gestionar credenciales y parámetros desde la interfaz, y la lógica de conexión se implementa en el backend usando estos parámetros.
+- Se documentó que los tipos de campo son solo informativos para el usuario y para futuras validaciones o ayudas contextuales.
+- Se recomienda consultar la documentación oficial de cada plataforma/API para saber qué campos y tipos se requieren.
+
+### Ventajas de este enfoque:
+- Máxima flexibilidad y escalabilidad.
+- Experiencia visual profesional y amigable.
+- Permite conectar a cualquier fuente, incluso APIs nuevas o personalizadas.
+- Facilita la gestión de credenciales y parámetros sin tocar el código.
+
+---
+
+# Registro de mejoras en la gestión y guardado de conexiones
+
+## Fecha: 03/09/2025
+
+### Cambios realizados:
+- Se corrigió y validó que todos los cambios en campos y conexiones se guarden correctamente al pulsar 'Guardar conexión'.
+- Ahora cualquier modificación en los campos personalizados de una conexión requiere pulsar 'Guardar conexión' para persistir los cambios en el archivo `config.ini`.
+- Se documentó el flujo recomendado: crear/editar campos, luego guardar para que los cambios sean efectivos.
+- Se recomienda al usuario siempre pulsar 'Guardar conexión' tras cualquier cambio en los campos o valores de una conexión.
+
+### Estado actual:
+- El gestor de conexiones es flexible, visual y profesional.
+- Los cambios se guardan de forma segura y confiable.
+
+---
+
+**Próximo paso:**
+- Integrar la lógica de extracción usando los parámetros definidos y guardados en cada conexión.
