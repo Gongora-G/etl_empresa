@@ -31,7 +31,7 @@ Este proyecto tiene como objetivo implementar un sistema ETL (Extract, Transform
   - Transformación: `pandas`
   - Carga: `pyodbc`, `pandas.to_sql`, `openpyxl`
   - Orquestación: `Apache Airflow` (opcional), `Task Scheduler` (Windows)
-  - Interfaz: `Streamlit`
+  - Interfaz: `PyQt5` (aplicación de escritorio profesional)
 - **Base de datos destino:** Microsoft SQL Server
 - **Control de versiones:** GitHub
 - **Documentación:** README, manual de usuario
@@ -65,13 +65,14 @@ ETL_EMPRESA/
 │   └── utils.py
 │
 ├── interface/
-│   ├── dashboard.py       # Vista principal (Streamlit)
-│   ├── views/             # Subvistas
+│   ├── main_window.py     # Ventana principal PyQt5
+│   ├── views/             # Subvistas PyQt5
 │   │   ├── source_view.py
+│   │   ├── ocr_view.py    # Vista para extracción OCR
 │   │   ├── transform_view.py
 │   │   ├── destination_view.py
 │   │   └── log_view.py
-│   └── components/        # Componentes reutilizables
+│   └── components/        # Componentes reutilizables PyQt5
 │       ├── sidebar.py
 │       ├── table.py
 │       └── ...
