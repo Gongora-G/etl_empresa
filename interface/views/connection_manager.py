@@ -5,7 +5,8 @@ from PyQt5.QtCore import Qt
 
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), '../../config.ini')
 
-class ConnectionManager(QWidget):
+from PyQt5.QtWidgets import QDialog
+class ConnectionManager(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Gestor de Conexiones de Datos")

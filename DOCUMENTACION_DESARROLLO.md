@@ -1,3 +1,61 @@
+### Visualización profesional de parámetros de conexión
+
+Por motivos de seguridad y profesionalismo, los valores completos de parámetros sensibles (token, client_secret, refresh_token) se ocultan en la interfaz. Solo se muestran los primeros y últimos caracteres, con asteriscos en el medio. El usuario puede revelar el valor completo bajo demanda si es necesario.
+
+Esta práctica protege la información confidencial y mejora la experiencia del usuario, evitando exposiciones accidentales de credenciales.
+
+Ejemplo visual:
+- Token: 1000.c689...f0c499   (oculto)
+- Client Secret: 1ec66...9887e5b   (oculto)
+
+Los parámetros no sensibles se muestran parcialmente si son largos, para mantener la interfaz limpia y profesional.
+# Documentación de integración Zoho Bigin
+
+## Proceso para obtener credenciales válidas
+
+1. **Registro de aplicación en Zoho API Console**
+	- Tipo: Aplicaciones basadas en servidor
+	- Nombre: ETL Empresa
+	- URL de inicio/redirección: https://localhost
+	- Resultado: Se obtiene `client_id` y `client_secret`.
+
+2. **Generación del código de autorización**
+	- URL construida:
+	  `https://accounts.zoho.com/oauth/v2/auth?scope=ZohoBigin.modules.ALL&client_id=CLIENT_ID&response_type=code&access_type=offline&redirect_uri=https://localhost`
+	- Se autoriza la app y se copia el parámetro `code` de la URL de redirección.
+
+3. **Intercambio del código por tokens en Postman**
+	- POST a `https://accounts.zoho.com/oauth/v2/token` con body x-www-form-urlencoded:
+	  - grant_type: authorization_code
+	  - client_id: (el real)
+	  - client_secret: (el real)
+	  - redirect_uri: https://localhost
+	  - code: (el obtenido)
+	- Resultado: Se obtiene `access_token` y `refresh_token`.
+
+## Errores y soluciones
+- **invalid_code**: El código expiró o ya fue usado. Solución: generar uno nuevo y usarlo de inmediato.
+- **invalid_client**: El client_id o client_secret no son válidos. Solución: revisar credenciales en Zoho API Console.
+- **invalid_url_pattern (404)**: El endpoint usado no existe. Solución: usar `/bigin/v1/users` para probar autenticación.
+
+## Guardado y refresco automático de token
+- Los valores se guardan en `config.ini`.
+- El sistema refresca el token automáticamente si expira, usando el `refresh_token`, `client_id` y `client_secret`.
+- Si el refresco falla, se muestra el error detallado en la interfaz.
+
+## Ejemplo de sección válida en config.ini
+```ini
+[zoho_bigin]
+type = zoho_bigin
+token = 1000.d880f1f153cf3fb742e83fdd62c4988e.976a626a595ec268ad5b47a6e5a03a0f
+client_id = 1000.HK0XC64VRVBC5F98TUIQ0H53YSBIUD
+client_secret = 1ec66e92e44790a324a1d5121c43ce7903e9887e5b
+refresh_token = 1000.f3700dd8f6391d3095f45685c1bc6433.3e4988b4cdc8d984659f4c3b377fe447
+```
+
+---
+
+**Todo el proceso y los errores fueron documentados para futuras referencias y soporte.**
 # Registro de desarrollo y decisiones
 
 ## 2025-09-03

@@ -9,6 +9,8 @@ import sys
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        from views.connection_manager import ConnectionManager
+        self.connection_manager = ConnectionManager()
         self.setWindowTitle("ETL Empresa - Escritorio")
         self.setGeometry(100, 100, 1000, 700)
 
@@ -157,7 +159,7 @@ class MainWindow(QMainWindow):
 
     def show_extraction(self):
         self.limpiar_content()
-        extraction_view = ExtractionView()
+        extraction_view = ExtractionView(self.connection_manager)
         self.content_layout.addWidget(extraction_view)
 
     def cambiar_vista(self, index):
