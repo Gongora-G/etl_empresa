@@ -216,21 +216,31 @@ Avanzar con integración de módulos y funcionalidades.
 **Próximo paso:**
 - Integrar la lógica de extracción usando los parámetros definidos y guardados en cada conexión.
 
-# Registro de rediseño profesional de la vista de extracción
+
+# Registro de rediseño profesional de la vista de extracción y seguridad de parámetros
 
 ## Fecha: 04/09/2025
 
 ### Cambios y decisiones:
 - El combo de la vista de extracción ahora muestra las conexiones guardadas, no los tipos de fuente.
-- Al seleccionar una conexión, se muestra un resumen visual de los campos y valores definidos.
+- Al seleccionar una conexión, se muestra un resumen visual de todos los campos y valores definidos, incluyendo los sensibles.
+- Los campos sensibles (token, client_secret, refresh_token, password) se ocultan por defecto y pueden mostrarse/ocultarse todos con un solo botón para mayor seguridad y comodidad.
 - Se eliminó el campo de parámetro/conexión, ya que toda la información se gestiona en el gestor de conexiones.
-- Se agregó un botón "Probar conexión" para validar la conexión antes de extraer datos.
+- Se agregó un botón "Probar conexión" que valida la conexión real para SQL Server y Zoho Bigin. En Zoho, si el token expira, se refresca automáticamente y se actualiza el config.ini.
 - Se agregó un botón "Extraer datos" para ejecutar la lógica de extracción usando los parámetros definidos.
-- Se dejó un punto claro en el backend para implementar la lógica real de prueba y extracción según el tipo de fuente/API.
-- La experiencia es más interactiva, profesional y segura.
+- El gestor de conexiones es completamente flexible: permite agregar, editar y eliminar cualquier campo, con tipo informativo.
+- Al crear, editar o eliminar conexiones, la interfaz se actualiza automáticamente sin reiniciar la app.
+- Se documentó el flujo recomendado: siempre guardar los cambios y probar la conexión antes de extraer datos.
+- Se recomienda nunca compartir el archivo config.ini sin anonimizar los valores sensibles.
+
+### Estado actual:
+- La experiencia es interactiva, profesional y segura.
+- El backend está listo para implementar la lógica real de extracción y carga para cada tipo de fuente/API.
 
 ---
 
 **Próximo paso:**
-- Implementar la lógica real de prueba y extracción para cada tipo de fuente/API.
+- Implementar la lógica real de extracción y carga para cada tipo de fuente/API.
+- Mejorar la visualización de logs y errores en la interfaz.
+- Agregar más validaciones y ayudas contextuales en el gestor de conexiones.
 - Documentar ejemplos y recomendaciones para cada tipo de conexión.

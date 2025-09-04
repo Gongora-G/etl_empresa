@@ -223,41 +223,4 @@ class ExtractionView(QWidget):
         if self.config.sections():
             self.mostrar_resumen_conexion(self.config.sections()[0])
         else:
-            self.resumen_label.setText("")
-
-    def mostrar_resumen_conexion(self, nombre):
-        from PyQt5.QtWidgets import QPushButton, QHBoxLayout, QWidget, QLabel, QVBoxLayout
-        # Limpiar widget anterior si existe
-    # Eliminado: lógica de params_widget innecesaria
-        vbox = QVBoxLayout()
-        if nombre in self.config:
-            params = self.config[nombre]
-            vbox.addWidget(QLabel("<b>Parámetros de conexión:</b>"))
-            for key, value in params.items():
-                hbox = QHBoxLayout()
-                label = QLabel(f"<b>{key.replace('_', ' ').title()}</b>:")
-                hbox.addWidget(label)
-                if key in ["token", "client_secret", "refresh_token"]:
-                    if key not in self.sensitive_states:
-                        self.sensitive_states[key] = False
-                    if self.sensitive_states[key]:
-                        value_label = QLabel(value)
-                        btn = QPushButton("Ocultar")
-                    else:
-                        display_value = value[:6] + "..." + value[-6:] if len(value) > 10 else "******"
-                        value_label = QLabel(f"{display_value}   (oculto)")
-                        btn = QPushButton("Mostrar")
-                    def make_toggle(k):
-                        def toggle():
-                            self.sensitive_states[k] = not self.sensitive_states[k]
-                            self.mostrar_resumen_conexion(nombre)
-                        return toggle
-                    btn.clicked.connect(make_toggle(key))
-                    hbox.addWidget(value_label)
-                    hbox.addWidget(btn)
-                else:
-                    display_value = value[:6] + "..." + value[-6:] if len(value) > 12 else value
-                    value_label = QLabel(display_value)
-                    hbox.addWidget(value_label)
-                vbox.addLayout(hbox)
-    # Eliminado: lógica de params_widget innecesaria
+            self.resumen_label.setText("<i>No hay conexiones configuradas. Usa 'Gestionar conexiones' para crear una.</i>")

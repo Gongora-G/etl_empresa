@@ -123,13 +123,40 @@ graph TD;
 
 ---
 
-## 7. Consideraciones Especiales
 
+## 7. Consideraciones Especiales y Seguridad
+
+- **Gestor de conexiones flexible:** El sistema permite crear, editar y eliminar conexiones a cualquier fuente (SQL Server, Zoho Bigin, APIs, etc.) con campos personalizados. Cada campo puede tener un tipo informativo (Texto, Número, Token/Clave, URL, etc.) para mayor claridad.
+- **Visualización segura de parámetros:** Los valores de campos sensibles (token, client_secret, refresh_token, password) se ocultan por defecto en la interfaz de usuario. El usuario puede mostrar/ocultar todos los sensibles con un solo botón para evitar exposiciones accidentales.
+- **Prueba real de conexiones:** El botón "Probar conexión" valida la conectividad real para SQL Server y Zoho Bigin. En Zoho, si el token expira, se refresca automáticamente usando el refresh_token y se actualiza el archivo `config.ini`.
+- **Actualización dinámica:** Al crear, editar o eliminar conexiones, la interfaz se actualiza automáticamente para reflejar los cambios sin necesidad de reiniciar la aplicación.
 - **Data Lake:** Se puede agregar si el volumen de datos crece o se manejan datos no estructurados.
 - **APIs externas:** Ejemplo Zoho Bigin, integración para extraer tratos, empresas, contactos y archivos.
 - **Exportación de archivos:** Se recomienda Excel (`.xlsx`) para usuarios no técnicos, y CSV para interoperabilidad.
-- **Seguridad:** Protección de credenciales y datos sensibles.
+- **Seguridad:** Protección de credenciales y datos sensibles en la interfaz y en el archivo de configuración.
 - **Escalabilidad:** Modularidad para agregar nuevas fuentes/destinos fácilmente.
+
+### Ejemplo actualizado de config.ini
+```ini
+[sql_server]
+server = <tu_servidor>
+database = <tu_base>
+user = <usuario>
+password = <clave>
+
+[zoho_bigin]
+type = zoho_bigin
+token = <access_token>
+client_id = <client_id>
+client_secret = <client_secret>
+refresh_token = <refresh_token>
+```
+
+**Recomendaciones:**
+- Nunca compartas el archivo `config.ini` sin antes eliminar o anonimizar los valores sensibles.
+- Usa el gestor de conexiones para modificar parámetros, nunca edites manualmente el archivo salvo casos avanzados.
+- Siempre prueba la conexión antes de extraer datos.
+
 
 ---
 
@@ -143,11 +170,15 @@ graph TD;
 
 ---
 
+
 ## 9. Próximos Pasos
+- Implementar lógica de extracción y carga para cada tipo de conexión.
+- Mejorar la visualización de logs y errores en la interfaz.
+- Agregar más validaciones y ayudas contextuales en el gestor de conexiones.
 
 ---
 
-## 10. Guía Paso a Paso para el Desarrollo del Proyecto
+## 10. Guía Paso a Paso para el Desarrollo y Uso del Proyecto
 
 ### 1. Inicialización del Proyecto
 1. Crea la estructura de carpetas y archivos según el esquema anterior.
