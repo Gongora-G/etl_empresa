@@ -157,3 +157,22 @@ Avanzar con integración de módulos y funcionalidades.
 
 **Próximo paso:**
 - Integrar la lógica de extracción usando los parámetros definidos y guardados en cada conexión.
+
+# Registro de rediseño profesional de la vista de extracción
+
+## Fecha: 04/09/2025
+
+### Cambios y decisiones:
+- El combo de la vista de extracción ahora muestra las conexiones guardadas, no los tipos de fuente.
+- Al seleccionar una conexión, se muestra un resumen visual de los campos y valores definidos.
+- Se eliminó el campo de parámetro/conexión, ya que toda la información se gestiona en el gestor de conexiones.
+- Se agregó un botón "Probar conexión" para validar la conexión antes de extraer datos.
+- Se agregó un botón "Extraer datos" para ejecutar la lógica de extracción usando los parámetros definidos.
+- Se dejó un punto claro en el backend para implementar la lógica real de prueba y extracción según el tipo de fuente/API.
+- La experiencia es más interactiva, profesional y segura.
+
+---
+
+**Próximo paso:**
+- Implementar la lógica real de prueba y extracción para cada tipo de fuente/API.
+- Documentar ejemplos y recomendaciones para cada tipo de conexión.

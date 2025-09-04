@@ -18,11 +18,20 @@ class ConnectionManager(QWidget):
         self.connection_list = QListWidget()
         self.connection_list.addItems(self.config.sections())
         layout.addWidget(self.connection_list)
-        # Widget de campos personalizados
+        # Botón para mostrar/ocultar edición de campos
+        self.btn_toggle_edit = QPushButton("Editar campos")
+        layout.addWidget(self.btn_toggle_edit)
+        self.fields_widget = QWidget()
         self.fields_layout = QVBoxLayout()
-        layout.addLayout(self.fields_layout)
+        self.fields_widget.setLayout(self.fields_layout)
+        self.fields_widget.setVisible(False)
+        layout.addWidget(self.fields_widget)
         self.btn_add_field = QPushButton("Agregar campo")
-        layout.addWidget(self.btn_add_field)
+        self.btn_save_fields = QPushButton("Guardar campos")
+        field_btns = QHBoxLayout()
+        field_btns.addWidget(self.btn_add_field)
+        field_btns.addWidget(self.btn_save_fields)
+        self.fields_layout.addLayout(field_btns)
         self.btn_new = QPushButton("Nueva conexión")
         self.btn_save = QPushButton("Guardar conexión")
         self.btn_delete = QPushButton("Eliminar conexión")
@@ -37,8 +46,13 @@ class ConnectionManager(QWidget):
         self.btn_save.clicked.connect(self.save_connection)
         self.btn_delete.clicked.connect(self.delete_connection)
         self.btn_add_field.clicked.connect(self.add_field)
+        self.btn_save_fields.clicked.connect(self.save_fields)
+        self.btn_toggle_edit.clicked.connect(self.toggle_fields)
         if self.config.sections():
             self.load_connection(self.config.sections()[0])
+
+    def toggle_fields(self):
+        self.fields_widget.setVisible(not self.fields_widget.isVisible())
 
     def load_config(self):
         if os.path.exists(CONFIG_PATH):
@@ -50,18 +64,27 @@ class ConnectionManager(QWidget):
         params = self.config[section]
         self.clear_fields()
         for key in params:
-            if not key.endswith('_type'):  # Solo cargar campos, no tipos
-                self.add_field(key, params[key])
+            if key.endswith('_type'):
+                continue
+            field_type = params.get(f"{key}_type", "Texto")
+            self.add_field(key, params[key], field_type)
 
     def new_connection(self):
-        name, ok = QInputDialog.getText(self, "Nueva conexión", "Nombre de la conexión:")
-        if ok and name:
+        while True:
+            name, ok = QInputDialog.getText(self, "Nueva conexión", "Nombre de la conexión:")
+            name = name.strip()
+            if not ok:
+                return  # Cancelar
+            if not name:
+                QMessageBox.warning(self, "Error", "Debes ingresar un nombre para la conexión.")
+                continue
             self.config.add_section(name)
             self.connection_list.addItem(name)
             items = self.connection_list.findItems(name, Qt.MatchExactly)
             if items:
                 self.connection_list.setCurrentItem(items[0])
             self.clear_fields()
+            break
 
     def add_field(self, key=None, value=None, field_type=None):
         if key is None or isinstance(key, bool):
@@ -90,17 +113,19 @@ class ConnectionManager(QWidget):
         field_layout.addWidget(QLabel("Tipo:"))
         field_layout.addWidget(type_combo)
         field_layout.addWidget(btn_remove)
-        self.fields_layout.addLayout(field_layout)
+        self.fields_layout.insertLayout(self.fields_layout.count() - 1, field_layout)
         def remove():
-            for i in reversed(range(field_layout.count())):
-                widget = field_layout.itemAt(i).widget()
-                if widget:
-                    widget.setParent(None)
-            self.fields_layout.removeItem(field_layout)
+            reply = QMessageBox.question(self, "Confirmar eliminación", f"¿Seguro que deseas eliminar el campo '{key_input.text()}'?", QMessageBox.Yes | QMessageBox.No)
+            if reply == QMessageBox.Yes:
+                for i in reversed(range(field_layout.count())):
+                    widget = field_layout.itemAt(i).widget()
+                    if widget:
+                        widget.setParent(None)
+                self.fields_layout.removeItem(field_layout)
         btn_remove.clicked.connect(remove)
 
     def clear_fields(self):
-        while self.fields_layout.count():
+        while self.fields_layout.count() > 1:
             item = self.fields_layout.takeAt(0)
             if item.layout():
                 layout = item.layout()
@@ -110,9 +135,12 @@ class ConnectionManager(QWidget):
                         widget.setParent(None)
 
     def save_connection(self):
-        section = self.connection_list.currentItem().text()
+        section = self.connection_list.currentItem().text().strip()
+        if not section:
+            QMessageBox.warning(self, "Error", "Debes ingresar un nombre para la conexión antes de guardar.")
+            return
         self.config[section] = {}
-        for i in range(self.fields_layout.count()):
+        for i in range(self.fields_layout.count() - 1):
             layout = self.fields_layout.itemAt(i).layout()
             if layout:
                 key = layout.itemAt(1).widget().text()
@@ -124,6 +152,26 @@ class ConnectionManager(QWidget):
         with open(CONFIG_PATH, 'w') as configfile:
             self.config.write(configfile)
         QMessageBox.information(self, "Guardado", f"Conexión '{section}' guardada correctamente.")
+        # Refrescar lista de conexiones en la vista principal si existe el método
+        parent = self.parent()
+        if parent and hasattr(parent, 'actualizar_conexiones'):
+            parent.actualizar_conexiones()
+
+    def save_fields(self):
+        section = self.connection_list.currentItem().text()
+        self.config[section] = {}
+        for i in range(self.fields_layout.count() - 1):
+            layout = self.fields_layout.itemAt(i).layout()
+            if layout:
+                key = layout.itemAt(1).widget().text()
+                value = layout.itemAt(3).widget().text()
+                field_type = layout.itemAt(5).widget().currentText()
+                if key:
+                    self.config[section][key] = value
+                    self.config[section][f"{key}_type"] = field_type
+        with open(CONFIG_PATH, 'w') as configfile:
+            self.config.write(configfile)
+        QMessageBox.information(self, "Guardado", f"Campos de la conexión '{section}' guardados correctamente.")
         if self.parent() and hasattr(self.parent(), 'actualizar_conexiones'):
             self.parent().actualizar_conexiones()
 
