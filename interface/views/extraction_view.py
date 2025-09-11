@@ -1,9 +1,26 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QComboBox, QLineEdit, QFileDialog, QHBoxLayout, QTableWidget, QTableWidgetItem, QDialog, QMessageBox, QSizePolicy, QSpacerItem
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTabWidget, QLabel, QPushButton, QComboBox, QLineEdit, QFileDialog, QHBoxLayout, QTableWidget, QTableWidgetItem, QDialog, QMessageBox, QSizePolicy, QSpacerItem
 from PyQt5.QtCore import Qt
 from .connection_manager import ConnectionManager
 import configparser
 
 class ExtractionView(QWidget):
+    # Diccionario de mapeo para mostrar solo los campos relevantes de Tratos
+    TRATOS_MAP = {
+        "id": "ID Trato",
+        "Deal_Name": "Nombre Trato",
+        "Account_Name": "Empresa",
+        "Contact_Name": "Contacto",
+        "Pagaduria": "Pagaduría",
+        "Compra_cartera": "Compra cartera",
+        "Amount": "Valor",
+        "Stage": "Estado",
+        "Description": "Descripción",
+        "Labels": "Etiquetas",
+        "Created_Time": "Fecha de creación",
+        "Last_Modified_Time": "Última modificación",
+        "Plazo_solicitado": "Plazo solicitado",
+        "Tipo": "Tipo"
+    }
     def mostrar_gestor_conexiones(self):
         dlg = ConnectionManager(self)
         dlg.setWindowModality(Qt.ApplicationModal)
@@ -59,25 +76,34 @@ class ExtractionView(QWidget):
         self.btn_extraer.clicked.connect(self.extraer_datos)
         layout.addLayout(botones_layout)
 
-        # Tabla de resultados
-        self.table = QTableWidget()
-        self.table.setVisible(False)
-        layout.addWidget(self.table)
-
-        # Espaciador vertical para empujar todo hacia abajo
-        layout.addStretch()
-
-        # Layout horizontal para el botón en la esquina inferior derecha
+        # Layout principal vertical
+        main_layout = QVBoxLayout()
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(10)
+        # Bloque superior fijo (información y botones)
+        main_layout.addLayout(layout)
+        # Bloque central: tabla con pestañas
+        self.tabs = QTabWidget()
+        self.tab_tables = {}
+        for modulo in ["Tratos", "Contactos", "Empresas"]:
+            table = QTableWidget()
+            table.setVisible(False)
+            self.tab_tables[modulo] = table
+            self.tabs.addTab(table, modulo)
+        self.tabs.setVisible(False)
+        self.tabs.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        main_layout.addWidget(self.tabs, stretch=1)
+        # Bloque inferior: botón alineado a la derecha
         bottom_btn_layout = QHBoxLayout()
-        bottom_btn_layout.addStretch()  # Empuja el botón a la derecha
+        bottom_btn_layout.addStretch()
         self.btn_gestionar_conexiones = QPushButton("Gestionar conexiones")
         self.btn_gestionar_conexiones.setStyleSheet("background-color: #1e3c78; color: white; font-size: 14px; padding: 6px 18px; border-radius: 8px;")
         self.btn_gestionar_conexiones.setFixedWidth(170)
-        bottom_btn_layout.addWidget(self.btn_gestionar_conexiones)
-        layout.addLayout(bottom_btn_layout)
         self.btn_gestionar_conexiones.clicked.connect(self.mostrar_gestor_conexiones)
+        bottom_btn_layout.addWidget(self.btn_gestionar_conexiones)
+        main_layout.addLayout(bottom_btn_layout)
+        self.setLayout(main_layout)
 
-        self.setLayout(layout)
 
         # Mostrar resumen inicial
         if self.config.sections():
@@ -212,15 +238,19 @@ class ExtractionView(QWidget):
                 QMessageBox.critical(self, "Error detallado de importación", f"Error al extraer datos de Zoho Bigin:\n{str(e)}\n\nTraceback:\n{error_trace}")
                 return
             # Unir todos los módulos en una sola lista para mostrar en la tabla
-            datos = []
+            # Mostrar los datos en pestañas por módulo
+            datos_encontrados = False
             for modulo, registros in resultados.items():
-                for registro in registros:
-                    fila = {"Módulo": modulo}
-                    fila.update(registro)
-                    datos.append(fila)
-            if datos:
-                self.mostrar_tabla(datos)
-            else:
+                table = self.tab_tables.get(modulo)
+                if table is not None:
+                    if registros:
+                        self.mostrar_tabla_modulo(table, registros)
+                        table.setVisible(True)
+                        datos_encontrados = True
+                    else:
+                        table.setVisible(False)
+            self.tabs.setVisible(datos_encontrados)
+            if not datos_encontrados:
                 QMessageBox.information(self, "Sin datos", "No se encontraron datos en Zoho Bigin.")
         else:
             # Si no es Zoho, mantener la simulación
@@ -231,17 +261,161 @@ class ExtractionView(QWidget):
             ]
             self.mostrar_tabla(datos)
 
-    def mostrar_tabla(self, datos):
-        if not datos:
-            self.table.setVisible(False)
+    def mostrar_tabla_modulo(self, table, registros):
+        # Limpieza de campos para visualización profesional
+        def limpiar_valor(val):
+            if isinstance(val, dict):
+                # Mostrar solo el nombre si existe
+                return val.get('name', '')
+            if isinstance(val, list):
+                # Concatenar nombres si es lista de dicts
+                return ', '.join([v.get('name', '') if isinstance(v, dict) else str(v) for v in val])
+            if val is None:
+                return ''
+            # Eliminar signos raros y saltos de línea
+            return str(val).replace('{', '').replace('}', '').replace("'", '').replace('[', '').replace(']', '').replace('\n', ' ').replace(';', ' ').replace('"', '').strip()
+
+        # Diccionario de mapeo con los nombres reales del JSON de Zoho
+        TRATOS_MAP = {
+            'id': 'ID Trato',
+            'Deal_Name': 'Nombre Trato',
+            'Account_Name': 'Empresa',
+            'Contact_Name': 'Contacto',
+            'Pagadur_a': 'Pagaduría',
+            'Amount': 'Importe',
+            'Monto_solicitado': 'Monto Aprobado',
+            'Plazo_solicitado': 'Plazo solicitado',
+            'Compra_cartera': 'Compra cartera',
+            'Description': 'Descripción',
+            'Type': 'Tipo',
+            'Modified_Time': 'Última Modificación',
+        }
+
+        # Filtrar y limpiar registros
+        if table in self.tab_tables.values() and self.tabs.tabText(self.tabs.indexOf(table)) == "Tratos":
+            registros_limpios = []
+            for reg in registros:
+                reg_limpio = {}
+                for k, v in TRATOS_MAP.items():
+                    valor = reg.get(k, '')
+                    reg_limpio[k] = limpiar_valor(valor)
+                registros_limpios.append(reg_limpio)
+            # Determinar columnas visibles (solo si hay datos)
+            columnas = [k for k, v in TRATOS_MAP.items() if any(r[k] for r in registros_limpios)]
+            nombres = [TRATOS_MAP[c] for c in columnas]
+            # Mostrar tabla usando el método existente
+            table.setRowCount(len(registros_limpios))
+            table.setColumnCount(len(columnas))
+            table.setHorizontalHeaderLabels(nombres)
+            # Definir campos obligatorios
+            obligatorios = {'ID Trato', 'Nombre Trato', 'Empresa', 'Contacto', 'Pagaduría', 'Importe'}
+            for i, fila in enumerate(registros_limpios):
+                for j, clave in enumerate(columnas):
+                    valor = fila.get(clave, "")
+                    item = QTableWidgetItem()
+                    if not valor:
+                        if TRATOS_MAP[clave] in obligatorios:
+                            item.setText("Obligatorio")
+                            item.setForeground(Qt.red)
+                        else:
+                            item.setText("Sin dato")
+                            item.setForeground(Qt.gray)
+                    else:
+                        item.setText(str(valor))
+                    table.setItem(i, j, item)
+            table.resizeColumnsToContents()
+            table.setVisible(True)
             return
-        self.table.setVisible(True)
-        self.table.setRowCount(len(datos))
-        self.table.setColumnCount(len(datos[0]))
-        self.table.setHorizontalHeaderLabels(list(datos[0].keys()))
-        for i, fila in enumerate(datos):
-            for j, clave in enumerate(fila):
-                self.table.setItem(i, j, QTableWidgetItem(str(fila[clave])))
+        if not registros:
+            table.setVisible(False)
+            return
+        # Visualización profesional para cada módulo
+        modulo = self.tabs.tabText(self.tabs.indexOf(table))
+        if modulo == "Tratos":
+            campos = [
+                ('id', 'ID Trato', True),
+                ('Deal_Name', 'Nombre Trato', True),
+                ('Account_Name', 'Empresa', True),
+                ('Contact_Name', 'Contacto', True),
+                ('Pagadur_a', 'Pagaduría', True),
+                ('Amount', 'Importe', True),
+                ('Monto_solicitado', 'Monto Aprobado', False),
+                ('Plazo_solicitado', 'Plazo solicitado', False),
+                ('Compra_cartera', 'Compra cartera', False),
+                ('Description', 'Descripción', False),
+                ('Type', 'Tipo', False),
+                ('Modified_Time', 'Última Modificación', False),
+            ]
+        elif modulo == "Contactos":
+            campos = [
+                ('id', 'ID Contacto', True),
+                ('NUIP1', 'NUIP', True),
+                ('Last_Name', 'Apellidos', True),
+                ('First_Name', 'Nombre', True),
+                ('Account_Name', 'Nombre de Empresa', True),
+                ('Email', 'Correo electrónico', False),
+                ('Phone', 'Teléfono', False),
+                ('Owner', 'Propietario de Contacto', True),
+            ]
+        elif modulo == "Empresas":
+            campos = [
+                ('Account_Name', 'Nombre de Empresa', True),
+                ('Telefono', 'Teléfono', False),
+                ('Sitio_web', 'Sitio web', False),
+                ('Propietario_de_Empresa', 'Propietario de Empresa', True),
+                ('Email_nomina', 'Email nomina', False),
+            ]
+        else:
+            campos = []
+
+        # Limpiar y mapear los registros
+        registros_limpios = []
+        for reg in registros:
+            reg_limpio = {}
+            for k, nombre, _ in campos:
+                valor = reg.get(k, '')
+                # Si es Owner, mostrar solo el nombre
+                if k == 'Owner' and isinstance(valor, dict):
+                    valor = valor.get('name', '')
+                reg_limpio[k] = limpiar_valor(valor)
+            registros_limpios.append(reg_limpio)
+
+        # Limpiar y mapear los registros
+        registros_limpios = []
+        for reg in registros:
+            reg_limpio = {}
+            for k, nombre, _ in campos:
+                valor = reg.get(k, '')
+                reg_limpio[k] = limpiar_valor(valor)
+            registros_limpios.append(reg_limpio)
+        # Determinar columnas visibles (solo si hay datos o son obligatorias)
+        columnas = [k for k, nombre, req in campos if any(r[k] for r in registros_limpios) or req]
+        nombres = [nombre for k, nombre, req in campos if k in columnas]
+        # Mostrar tabla usando el método existente
+        table.setRowCount(len(registros_limpios))
+        table.setColumnCount(len(columnas))
+        table.setHorizontalHeaderLabels(nombres)
+        for i, fila in enumerate(registros_limpios):
+            for j, clave in enumerate(columnas):
+                valor = fila.get(clave, "")
+                item = QTableWidgetItem()
+                obligatorio = False
+                for k, nombre, req in campos:
+                    if k == clave:
+                        obligatorio = req
+                        break
+                if not valor:
+                    if obligatorio:
+                        item.setText("Obligatorio")
+                        item.setForeground(Qt.red)
+                    else:
+                        item.setText("Sin dato")
+                        item.setForeground(Qt.gray)
+                else:
+                    item.setText(str(valor))
+                table.setItem(i, j, item)
+        table.resizeColumnsToContents()
+        table.setVisible(True)
 
     def actualizar_conexiones(self):
         self.config.read("config.ini")

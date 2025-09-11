@@ -14,6 +14,9 @@ def obtener_datos_zoho_bigin(token):
         resp = requests.get(url, headers=headers)
         if resp.status_code == 200:
             resultados[nombre] = resp.json().get("data", [])
+            if nombre == "Contactos" and resultados[nombre]:
+                print("Primer registro de Contactos desde Zoho:")
+                print(resultados[nombre][0])
         else:
             resultados[nombre] = []
     return resultados
