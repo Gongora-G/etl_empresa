@@ -359,12 +359,36 @@ class ExtractionView(QWidget):
             ]
         elif modulo == "Empresas":
             campos = [
+                ('id', 'ID Empresa', True),
                 ('Account_Name', 'Nombre de Empresa', True),
-                ('Telefono', 'Teléfono', False),
-                ('Sitio_web', 'Sitio web', False),
-                ('Propietario_de_Empresa', 'Propietario de Empresa', True),
+                ('Phone', 'Teléfono', False),
+                ('Website', 'Sitio web', False),
+                ('Owner', 'Propietario de Empresa', True),
                 ('Email_nomina', 'Email nomina', False),
+                ('Description', 'Descripción', False),
             ]
+        # Limpiar y mapear los registros
+        registros_limpios = []
+        for reg in registros:
+            reg_limpio = {}
+            for k, nombre, _ in campos:
+                valor = reg.get(k, '')
+                # Si es Owner, mostrar solo el nombre
+                if k == 'Owner' and isinstance(valor, dict):
+                    valor = valor.get('name', '')
+                reg_limpio[k] = limpiar_valor(valor)
+            registros_limpios.append(reg_limpio)
+        # Limpiar y mapear los registros
+        registros_limpios = []
+        for reg in registros:
+            reg_limpio = {}
+            for k, nombre, _ in campos:
+                valor = reg.get(k, '')
+                # Si es Owner, mostrar solo el nombre
+                if k == 'Owner' and isinstance(valor, dict):
+                    valor = valor.get('name', '')
+                reg_limpio[k] = limpiar_valor(valor)
+            registros_limpios.append(reg_limpio)
         else:
             campos = []
 
