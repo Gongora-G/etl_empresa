@@ -194,14 +194,42 @@ class ExtractionView(QWidget):
     def extraer_datos(self):
         nombre = self.conexion_combo.currentText()
         params = self.config[nombre] if nombre in self.config else {}
-        # Aquí va la lógica real de extracción
-        # Simulación de datos
-        datos = [
-            {"ID": 1, "Nombre": "Empresa A", "Valor": 1000},
-            {"ID": 2, "Nombre": "Empresa B", "Valor": 2500},
-            {"ID": 3, "Nombre": "Empresa C", "Valor": 1800},
-        ]
-        self.mostrar_tabla(datos)
+        tipo = nombre.lower()
+        if tipo == "zoho_bigin":
+            try:
+                import sys, os, traceback
+                proyecto_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../'))
+                if proyecto_root not in sys.path:
+                    sys.path.insert(0, proyecto_root)
+                from etl.sources.zoho_bigin import obtener_datos_zoho_bigin
+                token = params.get("token", "")
+                if not token:
+                    QMessageBox.warning(self, "Error", "No se encontró el token para Zoho Bigin.")
+                    return
+                resultados = obtener_datos_zoho_bigin(token)
+            except Exception as e:
+                error_trace = traceback.format_exc()
+                QMessageBox.critical(self, "Error detallado de importación", f"Error al extraer datos de Zoho Bigin:\n{str(e)}\n\nTraceback:\n{error_trace}")
+                return
+            # Unir todos los módulos en una sola lista para mostrar en la tabla
+            datos = []
+            for modulo, registros in resultados.items():
+                for registro in registros:
+                    fila = {"Módulo": modulo}
+                    fila.update(registro)
+                    datos.append(fila)
+            if datos:
+                self.mostrar_tabla(datos)
+            else:
+                QMessageBox.information(self, "Sin datos", "No se encontraron datos en Zoho Bigin.")
+        else:
+            # Si no es Zoho, mantener la simulación
+            datos = [
+                {"ID": 1, "Nombre": "Empresa A", "Valor": 1000},
+                {"ID": 2, "Nombre": "Empresa B", "Valor": 2500},
+                {"ID": 3, "Nombre": "Empresa C", "Valor": 1800},
+            ]
+            self.mostrar_tabla(datos)
 
     def mostrar_tabla(self, datos):
         if not datos:

@@ -1,15 +1,16 @@
-
-# Interfaz principal del software ETL usando PyQt5
+"""
+Interfaz principal del software ETL usando PyQt5
+"""
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QHBoxLayout, QFrame, QPushButton, QListWidget
 from PyQt5.QtGui import QFont, QColor
 from PyQt5.QtCore import Qt
-from views import ExtractionView
+from interface.views import ExtractionView
+from interface.views.connection_manager import ConnectionManager
 import sys
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        from views.connection_manager import ConnectionManager
         self.connection_manager = ConnectionManager()
         self.setWindowTitle("ETL Empresa - Escritorio")
         self.setGeometry(100, 100, 1000, 700)

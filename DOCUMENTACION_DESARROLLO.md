@@ -221,6 +221,18 @@ Avanzar con integración de módulos y funcionalidades.
 
 ## Fecha: 04/09/2025
 
+# Registro de integración de extracción real de Zoho Bigin
+
+## Fecha: 10/09/2025
+
+### Cambios realizados:
+- Se integró la función `obtener_datos_zoho_bigin` en la vista de extracción para mostrar los datos reales de Zoho Bigin en la tabla.
+- Ahora, al pulsar el botón "Extraer datos" con la conexión Zoho Bigin seleccionada, se consulta la API y se muestran los registros reales en la interfaz.
+- Se documentó el proceso y se mantiene la simulación para otros tipos de conexión.
+
+### Estado actual:
+- El módulo de extracción permite visualizar datos reales de Zoho Bigin directamente en la interfaz.
+
 ### Cambios y decisiones:
 - El combo de la vista de extracción ahora muestra las conexiones guardadas, no los tipos de fuente.
 - Al seleccionar una conexión, se muestra un resumen visual de todos los campos y valores definidos, incluyendo los sensibles.

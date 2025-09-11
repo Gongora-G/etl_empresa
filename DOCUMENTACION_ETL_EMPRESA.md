@@ -173,6 +173,7 @@ refresh_token = <refresh_token>
 
 ## 9. Próximos Pasos
 - Implementar lógica de extracción y carga para cada tipo de conexión.
+- [10/09/2025] Se integró la extracción real de datos de Zoho Bigin en el módulo de extracción, mostrando los datos en la tabla de la interfaz.
 - Mejorar la visualización de logs y errores en la interfaz.
 - Agregar más validaciones y ayudas contextuales en el gestor de conexiones.
 
