@@ -99,64 +99,74 @@ ETL_EMPRESA/
 
 ---
 
-## 5. Proceso ETL
+## 5. Arquitectura ETL con Data Lake y Data Warehouse
 
-1. **Configuración:** El usuario selecciona fuentes y destinos desde la interfaz.
-2. **Extracción:** El sistema obtiene datos desde APIs, bases de datos y archivos.
-3. **Transformación:** Se limpian y normalizan los datos según reglas de negocio.
-4. **Carga:** Los datos se insertan en SQL Server y/o se exportan a Excel/CSV.
-5. **Monitoreo:** El usuario visualiza el estado, logs y resultados desde el dashboard.
-6. **Automatización:** Los procesos pueden programarse para ejecución automática.
+### Data Lake (local)
+- Carpeta local `data_lake/` para almacenar datos crudos de todas las fuentes (Zoho Bigin, OCR, SQL Server, Excel, etc.).
+- Estructura recomendada:
+  ```
+  data_lake/
+    zoho_bigin/
+      contactos_YYYYMMDD.csv
+      empresas_YYYYMMDD.csv
+      tratos_YYYYMMDD.csv
+    ocr/
+      facturas_ocr_YYYYMMDD.csv
+      contratos_ocr_YYYYMMDD.csv
+    sql_server/
+      clientes_YYYYMMDD.csv
+    excel/
+      ventas_YYYYMMDD.csv
+    logs/
+      extraccion_YYYYMMDD.log
+  ```
+
+### Data Warehouse (SQL Server)
+- Base de datos local en SQL Server: `DW_Empresa`
+- Tablas principales: `Contactos`, `Empresas`, `Tratos`, más tablas específicas según el negocio (ej. `Facturas_OCR`).
+- Los datos transformados y limpios se cargan aquí para análisis y reportes.
+
+### Flujo ETL profesional
+1. Extracción: Cada fuente tiene su propio extractor y guarda datos crudos en el Data Lake.
+2. Transformación: Módulo aparte que lee del Data Lake, procesa y limpia los datos.
+3. Carga: Los datos transformados se insertan en el Data Warehouse (SQL Server).
+4. Visualización: Dashboards y reportes conectados al Data Warehouse.
+
+### Integración de OCR
+- El módulo OCR procesa archivos PDF, imágenes, etc. y guarda los resultados estructurados en `data_lake/ocr/`.
+- El proceso ETL puede transformar estos datos y cargarlos en tablas específicas del Data Warehouse.
+
+### Adaptación a múltiples fuentes
+- La arquitectura permite agregar nuevas fuentes fácilmente, cada una con su propio módulo de extracción y carpeta en el Data Lake.
 
 ---
 
-## 6. Ejemplo de Flujo Gráfico
+## 6. Plan de mejoras para el módulo de extracción
 
-```mermaid
-graph TD;
-    A[Configuración de fuentes/destinos] --> B[Extracción de datos]
-    B --> C[Transformación de datos]
-    C --> D[Carga en SQL Server/Excel/CSV]
-    D --> E[Monitoreo y reportes]
-    E --> F[Automatización y programación]
-```
+1. Exportar datos a Excel/CSV
+   - Botón para exportar los datos de la pestaña activa a un archivo Excel o CSV.
+2. Filtros y búsqueda rápida en las tablas
+   - Campo de búsqueda arriba de cada tabla para filtrar por texto (nombre, empresa, email, etc.).
+3. Paginación o carga progresiva
+   - Paginación si el número de registros supera cierto umbral (ej. 100).
+4. Visualización de detalles al hacer clic
+   - Panel lateral o modal con los detalles completos del registro seleccionado.
+5. Validación visual de campos obligatorios
+   - Resaltar en rojo los campos obligatorios faltantes y mostrar advertencias.
+6. Botón para recargar/actualizar los datos
+   - Refrescar los datos sin cerrar la ventana.
+7. Indicador de progreso/loading
+   - Spinner o barra de progreso mientras se realiza la extracción.
+8. Logs de extracción y errores accesibles
+   - Botón para ver el log de la última extracción y los errores.
 
 ---
 
-
-## 7. Consideraciones Especiales y Seguridad
-
-- **Gestor de conexiones flexible:** El sistema permite crear, editar y eliminar conexiones a cualquier fuente (SQL Server, Zoho Bigin, APIs, etc.) con campos personalizados. Cada campo puede tener un tipo informativo (Texto, Número, Token/Clave, URL, etc.) para mayor claridad.
-- **Visualización segura de parámetros:** Los valores de campos sensibles (token, client_secret, refresh_token, password) se ocultan por defecto en la interfaz de usuario. El usuario puede mostrar/ocultar todos los sensibles con un solo botón para evitar exposiciones accidentales.
-- **Prueba real de conexiones:** El botón "Probar conexión" valida la conectividad real para SQL Server y Zoho Bigin. En Zoho, si el token expira, se refresca automáticamente usando el refresh_token y se actualiza el archivo `config.ini`.
-- **Actualización dinámica:** Al crear, editar o eliminar conexiones, la interfaz se actualiza automáticamente para reflejar los cambios sin necesidad de reiniciar la aplicación.
-- **Data Lake:** Se puede agregar si el volumen de datos crece o se manejan datos no estructurados.
-- **APIs externas:** Ejemplo Zoho Bigin, integración para extraer tratos, empresas, contactos y archivos.
-- **Exportación de archivos:** Se recomienda Excel (`.xlsx`) para usuarios no técnicos, y CSV para interoperabilidad.
-- **Seguridad:** Protección de credenciales y datos sensibles en la interfaz y en el archivo de configuración.
-- **Escalabilidad:** Modularidad para agregar nuevas fuentes/destinos fácilmente.
-
-### Ejemplo actualizado de config.ini
-```ini
-[sql_server]
-server = <tu_servidor>
-database = <tu_base>
-user = <usuario>
-password = <clave>
-
-[zoho_bigin]
-type = zoho_bigin
-token = <access_token>
-client_id = <client_id>
-client_secret = <client_secret>
-refresh_token = <refresh_token>
-```
-
-**Recomendaciones:**
-- Nunca compartas el archivo `config.ini` sin antes eliminar o anonimizar los valores sensibles.
-- Usa el gestor de conexiones para modificar parámetros, nunca edites manualmente el archivo salvo casos avanzados.
-- Siempre prueba la conexión antes de extraer datos.
-
+## 7. Buenas prácticas y recomendaciones
+- Mantener los datos crudos en el Data Lake para trazabilidad y auditoría.
+- Realizar la transformación en un módulo aparte, nunca en el Data Lake.
+- Cargar solo datos limpios y validados al Data Warehouse.
+- Documentar cada fuente, transformación y destino en los archivos de documentación.
 
 ---
 

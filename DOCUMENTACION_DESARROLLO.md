@@ -256,3 +256,22 @@ Avanzar con integración de módulos y funcionalidades.
 - Mejorar la visualización de logs y errores en la interfaz.
 - Agregar más validaciones y ayudas contextuales en el gestor de conexiones.
 - Documentar ejemplos y recomendaciones para cada tipo de conexión.
+
+## Actualización 2025-09-12: Arquitectura y flujo ETL profesional
+
+- Se definió la arquitectura con Data Lake local (carpetas y archivos crudos) y Data Warehouse en SQL Server.
+- El módulo de transformación es independiente y toma los datos desde el Data Lake, los procesa y los carga en el Data Warehouse.
+- Se integran múltiples fuentes (Zoho Bigin, OCR, SQL Server, Excel, etc.) y cada una tiene su propio extractor y carpeta en el Data Lake.
+- El módulo OCR procesa archivos PDF, imágenes, etc. y guarda los resultados estructurados en `data_lake/ocr/`.
+- El flujo ETL profesional es: Extracción → Data Lake → Transformación → Data Warehouse → Visualización.
+- Se documentó el plan de mejoras para el módulo de extracción:
+  1. Exportar datos a Excel/CSV
+  2. Filtros y búsqueda rápida en las tablas
+  3. Paginación o carga progresiva
+  4. Visualización de detalles al hacer clic
+  5. Validación visual de campos obligatorios
+  6. Botón para recargar/actualizar los datos
+  7. Indicador de progreso/loading
+  8. Logs de extracción y errores accesibles
+- Se recomienda mantener los datos crudos en el Data Lake y realizar la transformación en un módulo aparte.
+- El Data Warehouse debe contener solo datos limpios y validados.
