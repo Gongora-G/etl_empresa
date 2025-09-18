@@ -39,9 +39,14 @@ class MainWindow(QMainWindow):
         nombre_empresa.setStyleSheet("color: white; font-size: 18px; font-weight: bold;")
         menu_layout.addWidget(nombre_empresa)
 
-        opciones = ["Dashboard", "Extracción", "Transformación", "Carga", "OCR", "Logs", "Configuración"]
-        self.menu_list = QListWidget()
-        self.menu_list.addItems(opciones)
+    opciones = ["Dashboard", "Extracción", "Transformación", "Carga", "Datalake", "OCR", "Logs", "Configuración"]
+    self.menu_list = QListWidget()
+    self.menu_list.addItems(opciones)
+    def show_datalake(self):
+        from interface.views.datalake.datalake_view import DatalakeView
+        self.limpiar_content()
+        datalake_view = DatalakeView()
+        self.content_layout.addWidget(datalake_view)
         self.menu_list.setStyleSheet("color: white; font-size: 16px; background: transparent; border: none;")
         menu_layout.addWidget(self.menu_list)
         menu_layout.addStretch()
@@ -168,6 +173,8 @@ class MainWindow(QMainWindow):
             self.show_dashboard()
         elif index == 1:
             self.show_extraction()
+        elif index == 4:
+            self.show_datalake()
         # Aquí se pueden agregar más elif para otras vistas
 
 

@@ -81,7 +81,22 @@ class ExtractionView(QWidget):
 
         # Botón para actualizar/recargar los datos
         self.btn_actualizar = QPushButton("Actualizar datos")
-        self.btn_actualizar.setStyleSheet("background-color: #e3eafc; color: #1e3c78; font-size: 13px; border-radius: 8px;")
+        self.btn_actualizar.setStyleSheet("""
+            QPushButton {
+                background-color: #1e3c78;
+                color: white;
+                font-size: 14px;
+                border-radius: 8px;
+                padding: 8px 24px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #274b99;
+            }
+            QPushButton:pressed {
+                background-color: #162447;
+            }
+        """)
         self.btn_actualizar.setFixedWidth(180)
         self.btn_actualizar.clicked.connect(self.actualizar_datos)
         botones_layout.addWidget(self.btn_actualizar)
@@ -115,8 +130,23 @@ class ExtractionView(QWidget):
         self.input_filtro_columna.setStyleSheet("font-size: 13px; padding: 6px; border-radius: 8px; background: #f5f5f5; color: #1e3c78;")
         self.filtros_layout.addWidget(self.input_filtro_columna)
         self.btn_filtrar_columna = QPushButton("Filtrar")
-        self.btn_filtrar_columna.setStyleSheet("background-color: #1e3c78; color: white; font-size: 13px; border-radius: 8px;")
-        self.btn_filtrar_columna.setFixedWidth(100)
+        self.btn_filtrar_columna.setStyleSheet("""
+            QPushButton {
+                background-color: #1e3c78;
+                color: white;
+                font-size: 14px;
+                border-radius: 8px;
+                padding: 8px 24px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #274b99;
+            }
+            QPushButton:pressed {
+                background-color: #162447;
+            }
+        """)
+        self.btn_filtrar_columna.setFixedWidth(110)
         self.btn_filtrar_columna.clicked.connect(self.filtrar_tabla_columna)
         self.filtros_layout.addWidget(self.btn_filtrar_columna)
         layout.addWidget(self.filtros_widget)
