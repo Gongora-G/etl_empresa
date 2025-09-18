@@ -39,14 +39,9 @@ class MainWindow(QMainWindow):
         nombre_empresa.setStyleSheet("color: white; font-size: 18px; font-weight: bold;")
         menu_layout.addWidget(nombre_empresa)
 
-    opciones = ["Dashboard", "Extracción", "Transformación", "Carga", "Datalake", "OCR", "Logs", "Configuración"]
-    self.menu_list = QListWidget()
-    self.menu_list.addItems(opciones)
-    def show_datalake(self):
-        from interface.views.datalake.datalake_view import DatalakeView
-        self.limpiar_content()
-        datalake_view = DatalakeView()
-        self.content_layout.addWidget(datalake_view)
+        opciones = ["Dashboard", "Extracción", "Transformación", "Carga", "Datalake", "OCR", "Logs", "Configuración"]
+        self.menu_list = QListWidget()
+        self.menu_list.addItems(opciones)
         self.menu_list.setStyleSheet("color: white; font-size: 16px; background: transparent; border: none;")
         menu_layout.addWidget(self.menu_list)
         menu_layout.addStretch()
@@ -71,6 +66,12 @@ class MainWindow(QMainWindow):
 
         # Conectar selección de menú
         self.menu_list.currentRowChanged.connect(self.cambiar_vista)
+
+    def show_datalake(self):
+        from interface.views.datalake.datalake_view import DatalakeView
+        self.limpiar_content()
+        datalake_view = DatalakeView()
+        self.content_layout.addWidget(datalake_view)
 
     def limpiar_content(self):
         # Elimina widgets actuales del content_layout
