@@ -10,9 +10,36 @@
 
 Este proyecto tiene como objetivo implementar un sistema ETL (Extract, Transform, Load) profesional y escalable para la empresa, permitiendo la integración de datos desde múltiples fuentes (APIs, bases de datos, archivos, etc.), su transformación según reglas de negocio y su carga en un Data Warehouse (SQL Server) y archivos Excel/CSV para análisis y reportes.
 
----
 
-## 2. Arquitectura General
+## 9. Módulo Datalake: Gestión de Archivos Crudos
+
+### Propósito y Alcance
+El módulo Datalake permite visualizar, descargar y eliminar archivos crudos almacenados localmente tras la extracción de datos desde cualquier fuente (APIs, OCR, SQL Server, Excel, etc.). Es el punto central para la trazabilidad y auditoría de los datos antes de su transformación.
+
+### Flujo de Usuario
+1. El usuario accede al menú "Datalake" en la interfaz principal.
+2. Se muestra una tabla profesional con los archivos almacenados: nombre, tamaño, fecha de creación y tipo.
+3. Al seleccionar un archivo, se visualizan sus metadatos en un panel lateral.
+4. El usuario puede descargar o eliminar archivos mediante botones dedicados.
+5. La lista se actualiza automáticamente tras cada acción.
+
+### Estructura y Justificación del Código
+- El módulo está implementado en `interface/views/datalake/datalake_view.py`.
+- Utiliza `QTableWidget` para mostrar los archivos y sus atributos.
+- Incluye botones para descargar y eliminar, y un panel de metadatos.
+- El backend es local, pero la arquitectura permite migrar a la nube fácilmente.
+
+### Buenas Prácticas y Recomendaciones
+- Mantener los datos crudos en el Datalake para trazabilidad y auditoría.
+- No realizar transformaciones en el Datalake; solo gestión y consulta.
+- Documentar cada acción relevante y mantener la interfaz profesional y consistente.
+- Preparar el código para soportar almacenamiento en la nube si se requiere.
+
+### Próximos pasos
+- Integrar funcionalidad de subida de archivos y visualización avanzada de metadatos.
+- Permitir filtros y búsqueda en la tabla de archivos.
+- Agregar logs de acciones del usuario sobre el Datalake.
+
 
 ### Módulos Principales
 - **Extracción:** Obtención de datos desde APIs (ej. Zoho Bigin), bases de datos, archivos Excel/CSV, etc.
